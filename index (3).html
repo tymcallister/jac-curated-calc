@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curated Collection · Price Estimator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5F0E8;
+      --warm-white: #FAFAF7;
+      --stone: #C8BCA8;
+      --clay: #9E8B74;
+      --espresso: #3A2E24;
+      --charcoal: #2A2520;
+      --gold: #B8955A;
+      --gold-light: #D4AF78;
+      --muted: #7A6E62;
+      --border: rgba(184, 149, 90, 0.2);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--charcoal);
+      color: var(--cream);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(184,149,90,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(158,139,116,0.06) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      color: var(--warm-white);
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .header-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* Card */
+    .card {
+      background: rgba(58, 46, 36, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.04) inset,
+        0 32px 64px rgba(0,0,0,0.4),
+        0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider-label {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--clay);
+      white-space: nowrap;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Inputs */
+    .input-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper .unit {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--clay);
+      pointer-events: none;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: rgba(200,188,168,0.07);
+      border: 1px solid rgba(200,188,168,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 3.5rem 0.85rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--warm-white);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(184,149,90,0.5);
+      background: rgba(200,188,168,0.1);
+      box-shadow: 0 0 0 3px rgba(184,149,90,0.1);
+    }
+
+    input[type="number"].invalid {
+      border-color: rgba(200, 80, 80, 0.5);
+      box-shadow: 0 0 0 3px rgba(200,80,80,0.08);
+    }
+
+    .input-help {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Calculate Button */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.75rem;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(184,149,90,0.3);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.2s;
+    }
+
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn:hover::before { background: rgba(255,255,255,0.12); }
+
+    .btn svg { flex-shrink: 0; }
+
+    /* Results */
+    .results {
+      margin-top: 1.75rem;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1);
+      pointer-events: none;
+    }
+
+    .results.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .result-main {
+      background: linear-gradient(135deg, rgba(184,149,90,0.12) 0%, rgba(184,149,90,0.05) 100%);
+      border: 1px solid rgba(184,149,90,0.25);
+      border-radius: 12px;
+      padding: 1.4rem 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .result-main-label {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.35rem;
+    }
+
+    .result-main-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 9vw, 2.8rem);
+      font-weight: 300;
+      color: var(--warm-white);
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .result-item {
+      background: rgba(200,188,168,0.06);
+      border: 1px solid rgba(200,188,168,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .result-item-label {
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .result-item-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--stone);
+      line-height: 1;
+    }
+
+    /* Footer note */
+    .footer-note {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+
+    .footer-note strong {
+      color: var(--clay);
+      font-weight: 500;
+    }
+
+    /* Error */
+    .error-msg {
+      font-size: 0.7rem;
+      color: #e07070;
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    @media (max-width: 360px) {
+      .card { padding: 1.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-eyebrow">Curated Collection</div>
+      <h1>Price <em>Estimate</em><br>Calculator</h1>
+      <p class="header-sub">Enter your home's square footage to receive a projected price.</p>
+    </header>
+
+    <div class="card">
+      <div class="divider">
+        <span class="divider-label">Inputs</span>
+        <span class="divider-line"></span>
+      </div>
+
+      <div class="input-group">
+        <label for="ac-sqft">Air-Conditioned Square Footage</label>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            id="ac-sqft"
+            placeholder="e.g. 5023"
+            min="1"
+            step="1"
+            inputmode="numeric"
+          />
+          <span class="unit">AC SF</span>
+        </div>
+        <p class="input-help">Total conditioned living area</p>
+      </div>
+
+      <div class="input-group">
+        <label for="aur-sqft">Above Under-Roof Square Footage</label>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            id="aur-sqft"
+            placeholder="e.g. 7185"
+            min="1"
+            step="1"
+            inputmode="numeric"
+          />
+          <span class="unit">AUR SF</span>
+        </div>
+        <p class="input-help">Total under-roof area including garage & patios</p>
+      </div>
+
+      <button class="btn" onclick="calculate()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" opacity="0.7"/>
+          <rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity="0.7"/>
+        </svg>
+        Calculate Estimate
+      </button>
+
+      <p class="error-msg" id="error-msg">Please enter valid values for both fields. AUR SF must be ≥ AC SF.</p>
+
+      <div class="results" id="results">
+        <div class="divider" style="margin-top:0; margin-bottom:1rem;">
+          <span class="divider-line"></span>
+          <span class="divider-label">Estimate</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <div class="result-main">
+          <div class="result-main-label">Projected Price</div>
+          <div class="result-main-value" id="result-price">—</div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-item">
+            <div class="result-item-label">$ per AC SF</div>
+            <div class="result-item-value" id="result-ac">—</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item-label">$ per AUR SF</div>
+            <div class="result-item-value" id="result-aur">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Based on <strong>Curated Collection</strong> comparable data.<br>
+      Estimates are projections and not a guarantee of final pricing.
+    </p>
+  </div>
+
+  <script>
+    // Constants derived from the dataset averages
+    const BASE_PER_AUR = 54.93816;               // Base $ per Under-Roof SF
+    const AC_PREMIUM   = 142.871118;              // AC Premium $ per SF
+
+    const fmt = (n) =>
+      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+
+    const fmtSF = (n) =>
+      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+    function calculate() {
+      const acInput  = document.getElementById('ac-sqft');
+      const aurInput = document.getElementById('aur-sqft');
+      const errorEl  = document.getElementById('error-msg');
+      const resultsEl = document.getElementById('results');
+
+      const acSF  = parseFloat(acInput.value);
+      const aurSF = parseFloat(aurInput.value);
+
+      // Reset
+      acInput.classList.remove('invalid');
+      aurInput.classList.remove('invalid');
+      errorEl.classList.remove('visible');
+
+      // Validate
+      const acBad  = isNaN(acSF)  || acSF  <= 0;
+      const aurBad = isNaN(aurSF) || aurSF <= 0 || aurSF < acSF;
+      if (acBad || aurBad) {
+        if (acBad)  acInput.classList.add('invalid');
+        if (aurBad) aurInput.classList.add('invalid');
+        errorEl.classList.add('visible');
+        resultsEl.classList.remove('visible');
+        return;
+      }
+
+      // Formula from Excel (simplified): Base*AUR + (Base+ACPremium)*AC_SF
+      const price  = (BASE_PER_AUR * aurSF) + ((BASE_PER_AUR + AC_PREMIUM) * acSF);
+      const perAC  = price / acSF;
+      const perAUR = price / aurSF;
+
+      document.getElementById('result-price').textContent = fmt(price);
+      document.getElementById('result-ac').textContent    = fmtSF(perAC);
+      document.getElementById('result-aur').textContent   = fmtSF(perAUR);
+
+      resultsEl.classList.add('visible');
+
+      // Scroll results into view on mobile
+      setTimeout(() => {
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    // Allow Enter key on inputs
+    document.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+    });
+  </script>
+</body>
+</html>
