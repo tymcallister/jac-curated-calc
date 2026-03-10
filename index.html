@@ -378,8 +378,8 @@
   <div class="container">
     <header class="header">
       <div class="header-eyebrow">Curated Collection</div>
-      <h1>Price <em>Projection</em><br>Calculator</h1>
-      <p class="header-sub">Enter the proposed home's square footage to receive a projected price.</p>
+      <h1>Price <em>Estimate</em><br>Calculator</h1>
+      <p class="header-sub">Enter your home's square footage to receive a projected price.</p>
     </header>
 
     <div class="card">
@@ -389,7 +389,7 @@
       </div>
 
       <div class="input-group">
-        <label for="ac-sqft">AC Square Footage</label>
+        <label for="ac-sqft">Air-Conditioned Square Footage</label>
         <div class="input-wrapper">
           <input
             type="number"
@@ -401,11 +401,11 @@
           />
           <span class="unit">AC SF</span>
         </div>
-        <p class="input-help">Total Air Conditioned living area</p>
+        <p class="input-help">Total conditioned living area</p>
       </div>
 
       <div class="input-group">
-        <label for="aur-sqft">AUR Square Footage</label>
+        <label for="aur-sqft">Above Under-Roof Square Footage</label>
         <div class="input-wrapper">
           <input
             type="number"
@@ -417,7 +417,7 @@
           />
           <span class="unit">AUR SF</span>
         </div>
-        <p class="input-help">Total under-roof area, including garage & patios</p>
+        <p class="input-help">Total under-roof area including garage & patios</p>
       </div>
 
       <button class="btn" onclick="calculate()">
@@ -427,7 +427,7 @@
           <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/>
           <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity="0.7"/>
         </svg>
-        Calculate Projected Price
+        Calculate Estimate
       </button>
 
       <p class="error-msg" id="error-msg">Please enter valid values for both fields. AUR SF must be ≥ AC SF.</p>
@@ -458,15 +458,15 @@
     </div>
 
     <p class="footer-note">
-      Based on <strong>Curated Collection</strong> dataset.<br>
+      Based on <strong>Curated Collection</strong> comparable data.<br>
       Estimates are projections and not a guarantee of final pricing.
     </p>
   </div>
 
   <script>
     // Constants derived from the dataset averages
-    const BASE_PER_AUR = 55.3232020027591;       // Base $ per Under-Roof SF
-    const AC_PREMIUM   = 137.7950194028129;       // AC Premium $ per SF
+    const BASE_PER_AUR = 54.93816;               // Base $ per Under-Roof SF
+    const AC_PREMIUM   = 142.871118;              // AC Premium $ per SF
 
     const fmt = (n) =>
       new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
